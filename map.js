@@ -59,7 +59,7 @@ var bounds = new L.LatLngBounds(
     new L.LatLng(22.896634, -87.769914));
 map.fitBounds(bounds);
 
-var urlPrefix = "/v/"
+var urlPrefix = "/gulf_velocity/v/"
 
 var url = urlPrefix+dateTimes[0]+".json"
 let vel_line = null;
