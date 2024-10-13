@@ -80,22 +80,22 @@ function updatePolyline(data) {
     };
     // Create a new polyline and add it to the map
     vel_line = L.geoJSON(data, {style:myStyle}).addTo(map);
-    decorator = L.polylineDecorator(vel_line, {
-        patterns: [
+    // decorator = L.polylineDecorator(vel_line, {
+    //     patterns: [
 
-            // Arrowhead at the end
-            {
-                offset: '100%',
-                repeat: 1,
-                symbol: L.Symbol.arrowHead({
-                    pixelSize: 60,
-                    polygon: false,
-                    pathline: true,
-                    pathOptions: { stroke: true, fillOpacity: 1, weight: 1, color: 'red' }
-                })
-            }
-        ]
-    }).addTo(map);
+    //         // Arrowhead at the end
+    //         {
+    //             offset: '100%',
+    //             repeat: 1,
+    //             symbol: L.Symbol.arrowHead({
+    //                 pixelSize: 60,
+    //                 polygon: false,
+    //                 pathline: true,
+    //                 pathOptions: { stroke: true, fillOpacity: 1, weight: 1, color: 'red' }
+    //             })
+    //         }
+    //     ]
+    // }).addTo(map);
     // vel_line.arrowheads().addto(map);
     // ,{arrowheads: {offset:'start'}}
 
