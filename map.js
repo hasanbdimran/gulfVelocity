@@ -32,7 +32,7 @@ function generateDateTimes(startTime, endTime, interval) {
     var dateTimes = [];
     
     while (start <= end) {
-        var name = start.getFullYear()+'_'+`${start.getMonth()+1}`.padStart(2, '0')+'_'+`${start.getDate()}`.padStart(2, '0')+'_'+`${start.getHours()}`.padStart(2, '0');
+        var name = 'vr_'+start.getFullYear()+'_'+`${start.getMonth()+1}`.padStart(2, '0')+'_'+`${start.getDate()}`.padStart(2, '0')+'_'+`${start.getHours()}`.padStart(2, '0');
         dateTimes.push(name); // Add the current date to the array
         start.setHours(start.getHours() + interval); // Move the time forward by the interval
     }
@@ -59,70 +59,64 @@ var bounds = new L.LatLngBounds(
     new L.LatLng(22.896634, -87.769914));
 map.fitBounds(bounds);
 
-var urlPrefix = "/v/"
-var urlPrefix_image = "/resampled_speed/"
+var urlPrefix = "/gulf_velocity/v/"
 
 var url = urlPrefix+dateTimes[0]+".json"
-var url_image = urlPrefix_image+'speed_'+dateTimes[0]+'.tif'
-let vel_line = L.layerGroup();
-let decorator = L.layerGroup();
+let vel_line = null;
+let decorator = null;
 
 function updatePolyline(data) {
     // If a polyline already exists, remove it
     if (vel_line) {
-        vel_line.clearLayers();
+        map.removeLayer(vel_line);
     }
     if (decorator){
-        decorator.clearLayers();
+        map.removeLayer(decorator);
     }
     var myStyle = {
-        "color": "black",
-        "weight": 1,
-        "opacity": 0.4
+        "color": "#ff7800",
+        "weight": 2,
+        "opacity": 0.8
     };
-
-   L.geoJSON(data,  {
-        onEachFeature: function(feature, layer){
-            layer.setStyle(myStyle);
-             L.polylineDecorator(layer, {
-                patterns: [
-                    {
-                        offset: '100%',
-                        repeat: 0,
-                        symbol: L.Symbol.arrowHead({
-                            pixelSize: 4,
-                            polygon: true,
-                            pathOptions: { stroke: true, weight: 0.5, color:"black", opacity: 0.4 }
-                        })
-                    }
-                ]
-            }).addTo(decorator)
-    
-        }
-    }
-    
-    ).addTo(vel_line);
-
-    decorator.addTo(map);
-    vel_line.addTo(map);
-
     // Create a new polyline and add it to the map
-    // vel_line = L.geoJSON(data, {style:myStyle}).addTo(map);
+    vel_line = L.geoJSON(data, {style:myStyle}).addTo(map);
     // decorator = L.polylineDecorator(vel_line, {
     //     patterns: [
 
     //         // Arrowhead at the end
     //         {
     //             offset: '100%',
-    //             repeat: 0,
+    //             repeat: 1,
     //             symbol: L.Symbol.arrowHead({
-    //                 pixelSize: 10,
-    //                 polygon: true,
-    //                 pathOptions: { stroke: true, weight: 10, color: 'black' }
+    //                 pixelSize: 60,
+    //                 polygon: false,
+    //                 pathline: true,
+    //                 pathOptions: { stroke: true, fillOpacity: 1, weight: 1, color: 'red' }
     //             })
     //         }
     //     ]
     // }).addTo(map);
+    // vel_line.arrowheads().addto(map);
+    // ,{arrowheads: {offset:'start'}}
+
+    // vel_line.arrowhead();
+    // decorator = L.polylineDecorator(vel_line, {
+    //     patterns: [
+    //         // Arrowhead at the end
+    //         {
+    //             offset: '100%',
+    //             repeat: 0,
+    //             symbol: L.Symbol.arrowHead({
+    //                 pixelSize: 15,
+    //                 polygon: false,
+    //                 pathOptions: { stroke: true, color: 'red' }
+    //             })
+    //         }
+    //     ]
+    // }).addTo(map);
+
+
+
 
 }
 // Fetch polyline data
@@ -134,41 +128,6 @@ fetch(url)
     })
     .catch(error => console.error('Error fetching polyline:', error));
 
-//velocity raster start
-let image_layer = L.layerGroup();
-let key_track = []
-var color_sc = plotty.addColorScale("mycolorscale", ['#fffdcdff', '#d8c55fff', '#8ea20bff', '#32801fff', '#10542cff', '#172313ff'], 
-    [0, 0.2, 0.4, 0.6, 0.79999999, 1]);
-
-const options = {
-displayMin: 0,
-displayMax: 4,
-applyDisplayRange: false,
-clampLow: true,
-clampHigh: true,
-//   // Optional. Plotty color scale used to render the image.
-  colorScale: 'mycolorscale'
-
-};
-
-const option_render = {
-
-    noDataValue:NaN,
-    renderer: L.LeafletGeotiff.plotty(options)
-}
-    function imageUpdate(url_image) {
-        // If a polyline already exists, remove it
-        // if (image_layer) {
-        //     map.removeLayer(image_layer);
-        // }
-        image_layer = L.leafletGeotiff(url_image, option_render).addTo(map);
-        // image_layer.addTo(map);
-        const layerCount = Object.keys(map._layers).length;
-        console.log('layer count', layerCount);
-    };
-
-    imageUpdate(url_image);
-//velocity raster ends
 //function when sliding
 slider.oninput = function() {
     //changing the label
@@ -182,7 +141,6 @@ slider.oninput = function() {
         updatePolyline(data);
     })
     .catch(error => console.error('Error fetching polyline:', error));
-    imageUpdate(urlPrefix_image+'speed_'+dateTimes[this.value-1]+".tif");
   }
   
   var playTimeOut;
@@ -215,10 +173,10 @@ slider.oninput = function() {
                 updatePolyline(data);
             })
             .catch(error => console.error('Error fetching polyline:', error));
-            imageUpdate(urlPrefix_image+'speed_'+dateTimes[Number(val)-1]+".tif");
+
         //   imageOverlay.setUrl(urlPrefix+dateTimes[Number(val)-1]+".png")
   
-      }, 800);
+      }, 100);
   }
   
   document.getElementById('play').onclick = function(e){
@@ -239,49 +197,4 @@ slider.oninput = function() {
   
   //hidding the stop button by default
   document.getElementById('stop').style.display = "none";
-
-
-  function getColor(d) {
-    return d > 3.9 ? '#172313ff' :
-           d > 3.1 ? '#10542cff' :
-           d > 2.4 ? '#32801fff' :
-           d > 1.6 ? '#8ea20bff' :
-           d > 0.8 ? '#d8c55fff' :
-                    '#fffdcdff';
-}
-
-var legend = L.control({position: 'bottomleft'});
-
-legend.onAdd = function (map) {
-
-    var div = L.DomUtil.create('div', 'info legend'),
-        grades = [0, 0.8, 1.6, 2.4, 3.1, 3.9],
-        labels = [];
-
-    // loop through our density intervals and generate a label with a colored square for each interval
-    for (var i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-    }
-
-    return div;
-};
-
-legend.addTo(map);
-
-
-
-  let popup;
-map.on("click", function(e) {
-  if (!popup) {
-    popup = L.popup()
-      .setLatLng([e.latlng.lat, e.latlng.lng])
-      .openOn(map);
-  } else {
-    popup.setLatLng([e.latlng.lat, e.latlng.lng]);
-  }
-  const value = image_layer.getValueAtLatLng(+e.latlng.lat, +e.latlng.lng);
-  popup.setContent(`Speed(m/s): ${value.toFixed(2)}`).openOn(map);
-});
 
