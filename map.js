@@ -32,7 +32,7 @@ function generateDateTimes(startTime, endTime, interval) {
     var dateTimes = [];
     
     while (start <= end) {
-        var name = 'vr_'+start.getFullYear()+'_'+`${start.getMonth()+1}`.padStart(2, '0')+'_'+`${start.getDate()}`.padStart(2, '0')+'_'+`${start.getHours()}`.padStart(2, '0');
+        var name = start.getFullYear()+'_'+`${start.getMonth()+1}`.padStart(2, '0')+'_'+`${start.getDate()}`.padStart(2, '0')+'_'+`${start.getHours()}`.padStart(2, '0');
         dateTimes.push(name); // Add the current date to the array
         start.setHours(start.getHours() + interval); // Move the time forward by the interval
     }
