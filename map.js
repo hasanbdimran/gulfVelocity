@@ -59,8 +59,8 @@ var bounds = new L.LatLngBounds(
     new L.LatLng(22.896634, -87.769914));
 map.fitBounds(bounds);
 
-var urlPrefix = "/v/"
-var urlPrefix_image = "/resampled_speed/"
+var urlPrefix = "/gulf_velocity/v/"
+var urlPrefix_image = "/gulf_velocity/resampled_speed/"
 
 var url = urlPrefix+dateTimes[0]+".json"
 var url_image = urlPrefix_image+'speed_'+dateTimes[0]+'.tif'
